@@ -29,7 +29,13 @@ install:
   # conda build
   - conda build ./conda-recipe/
 
-  
+  # install
+  - conda install --use-local eidl
+
+script:
+  - python -c "import eidl"
+
+after_success:
   - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then 
       conda install anaconda-client;
       cp /home/travis/miniconda/conda-bld/noarch/*.tar.bz2 .;
