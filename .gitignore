@@ -1,0 +1,10 @@
+DS_Store
+.cache
+__pycache__
+data/*
+*.pyc
+*~
+*.egg-info
+.ipynb_checkpoints
+*.swp
+scratch.ipynb
