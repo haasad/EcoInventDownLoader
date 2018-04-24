@@ -1,0 +1,41 @@
+{% set name = "eidl" %}
+{% set version = "1.0.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  path: ..
+
+build:
+  noarch: python
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record record.txt
+  entry_points:
+      - get_ecoinvent = eidl.core:get_ecoinvent_cli
+
+requirements:
+  build:
+    - python
+    - setuptools
+    
+  run:
+    - python
+    - brightway2
+    - requests
+    - beautifulsoup4
+    - patool
+
+test:
+  imports:
+    - {{ name }}
+
+about:
+  home: https://github.com/haasad/EcoInventDownLoader
+  license: MIT
+  license_family: MIT
+  summary: EcoInventDownLoader (eidl)
+  description: |
+    Download, unpack and import ecoinvent into your brightway2 project in one simple step. 
+    More details and installation instructions can be found on [github](https://github.com/haasad/EcoInventDownLoader)
