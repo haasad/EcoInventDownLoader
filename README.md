@@ -42,11 +42,9 @@ import eidl
 import brightway2 as bw
 ```
 
-
 ```python
 bw.projects.set_current('eidl_demo')
 ```
-
 
 ```python
 bw.bw2setup()
@@ -85,9 +83,6 @@ bw.bw2setup()
 >    Applied 4 strategies in 0.98 seconds
 >    Wrote 718 LCIA methods with 178008 characterization factors
 >    Creating core data migrations
-    
-
-
 
 ```python
 eidl.get_ecoinvent()
@@ -158,4 +153,3 @@ eidl.get_ecoinvent()
 >      CPU %: 56.10
 >      Memory %: 7.07
 >    Created database: cutoff34
-
