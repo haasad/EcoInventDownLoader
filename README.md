@@ -52,39 +52,39 @@ bw.projects.set_current('eidl_demo')
 bw.bw2setup()
 ```
 
-    Creating default biosphere
-    
-
-
-    Writing activities to SQLite3 database:
-    0%                          100%
-    [##########                    ] | ETA: 00:00:00
-
-    Applying strategy: normalize_units
-    Applying strategy: drop_unspecified_subcategories
-    Applied 2 strategies in 0.00 seconds
-
-
-    [##############################] | ETA: 00:00:00
-    Total time elapsed: 00:00:00
-
-
-    Title: Writing activities to SQLite3 database:
-      Started: 04/25/2018 14:28:19
-      Finished: 04/25/2018 14:28:19
-      Total time elapsed: 00:00:00
-      CPU %: 63.10
-      Memory %: 0.93
-    Created database: biosphere3
-    Creating default LCIA methods
-    
-    Applying strategy: normalize_units
-    Applying strategy: set_biosphere_type
-    Applying strategy: drop_unspecified_subcategories
-    Applying strategy: link_iterable_by_fields
-    Applied 4 strategies in 0.98 seconds
-    Wrote 718 LCIA methods with 178008 characterization factors
-    Creating core data migrations
+>    Creating default biosphere
+>    
+>
+>
+>    Writing activities to SQLite3 database:
+>    0%                          100%
+>    [##########                    ] | ETA: 00:00:00
+>
+>    Applying strategy: normalize_units
+>    Applying strategy: drop_unspecified_subcategories
+>    Applied 2 strategies in 0.00 seconds
+>
+>
+>    [##############################] | ETA: 00:00:00
+>    Total time elapsed: 00:00:00
+>
+>
+>    Title: Writing activities to SQLite3 database:
+>      Started: 04/25/2018 14:28:19
+>      Finished: 04/25/2018 14:28:19
+>      Total time elapsed: 00:00:00
+>      CPU %: 63.10
+>      Memory %: 0.93
+>    Created database: biosphere3
+>    Creating default LCIA methods
+>    
+>    Applying strategy: normalize_units
+>    Applying strategy: set_biosphere_type
+>    Applying strategy: drop_unspecified_subcategories
+>    Applying strategy: link_iterable_by_fields
+>    Applied 4 strategies in 0.98 seconds
+>    Wrote 718 LCIA methods with 178008 characterization factors
+>    Creating core data migrations
     
 
 
@@ -93,69 +93,69 @@ bw.bw2setup()
 eidl.get_ecoinvent()
 ```
 
-    ecoinvent username: user
-    ecoinvent password: ·············
-    logging in to ecoinvent homepage...
-    login successful!
-    
-     available versions:
-    a 3.4
-    b 3.3
-    c 3.2
-    d 3.1
-    e 3.01
-    version: a
-    
-     system models:
-    a apos
-    b consequential
-    c cutoff
-    system model: c
-    downloading cutoff 3.4 ...
-    download finished!: /tmp/tmpk4ripmd7/cutoff34.7z
-    
-    patool: Extracting /tmp/tmpk4ripmd7/cutoff34.7z ...
-    patool: running /usr/bin/7z x -o/tmp/tmpk4ripmd7 -- /tmp/tmpk4ripmd7/cutoff34.7z
-    patool: ... /tmp/tmpk4ripmd7/cutoff34.7z extracted to `/tmp/tmpk4ripmd7'.
-    Extracting XML data from 14889 datasets
-    Extracted 14889 datasets in 13.80 seconds
-    Applying strategy: normalize_units
-    Applying strategy: remove_zero_amount_coproducts
-    Applying strategy: remove_zero_amount_inputs_with_no_activity
-    Applying strategy: remove_unnamed_parameters
-    Applying strategy: es2_assign_only_product_with_amount_as_reference_product
-    Applying strategy: assign_single_product_as_activity
-    Applying strategy: create_composite_code
-    Applying strategy: drop_unspecified_subcategories
-    Applying strategy: fix_ecoinvent_flows_pre34
-    Applying strategy: link_biosphere_by_flow_uuid
-    Applying strategy: link_internal_technosphere_by_composite_code
-    Applying strategy: delete_exchanges_missing_activity
-    Applying strategy: delete_ghost_exchanges
-    Applying strategy: remove_uncertainty_from_negative_loss_exchanges
-    Applying strategy: fix_unreasonably_high_lognormal_uncertainties
-    Applying strategy: set_lognormal_loc_value
-    Applied 16 strategies in 4.56 seconds
-    14889 datasets
-    520205 exchanges
-    0 unlinked exchanges
-      
-    
-    Write database cutoff34 in project eidl_demo?
-    [y]/n y
-
-
-    Writing activities to SQLite3 database:
-    0%                          100%
-    [##############################] | ETA: 00:00:00
-    Total time elapsed: 00:01:22
-
-
-    Title: Writing activities to SQLite3 database:
-      Started: 04/25/2018 14:33:09
-      Finished: 04/25/2018 14:34:32
-      Total time elapsed: 00:01:22
-      CPU %: 56.10
-      Memory %: 7.07
-    Created database: cutoff34
+>    ecoinvent username: user
+>    ecoinvent password: ·············
+>    logging in to ecoinvent homepage...
+>    login successful!
+>    
+>     available versions:
+>    a 3.4
+>    b 3.3
+>    c 3.2
+>    d 3.1
+>    e 3.01
+>    version: a
+>    
+>     system models:
+>    a apos
+>    b consequential
+>    c cutoff
+>    system model: c
+>    downloading cutoff 3.4 ...
+>    download finished!: /tmp/tmpk4ripmd7/cutoff34.7z
+>    
+>    patool: Extracting /tmp/tmpk4ripmd7/cutoff34.7z ...
+>    patool: running /usr/bin/7z x -o/tmp/tmpk4ripmd7 -- /tmp/tmpk4ripmd7/cutoff34.7z
+>    patool: ... /tmp/tmpk4ripmd7/cutoff34.7z extracted to `/tmp/tmpk4ripmd7'.
+>    Extracting XML data from 14889 datasets
+>    Extracted 14889 datasets in 13.80 seconds
+>    Applying strategy: normalize_units
+>    Applying strategy: remove_zero_amount_coproducts
+>    Applying strategy: remove_zero_amount_inputs_with_no_activity
+>    Applying strategy: remove_unnamed_parameters
+>    Applying strategy: es2_assign_only_product_with_amount_as_reference_product
+>    Applying strategy: assign_single_product_as_activity
+>    Applying strategy: create_composite_code
+>    Applying strategy: drop_unspecified_subcategories
+>    Applying strategy: fix_ecoinvent_flows_pre34
+>    Applying strategy: link_biosphere_by_flow_uuid
+>    Applying strategy: link_internal_technosphere_by_composite_code
+>    Applying strategy: delete_exchanges_missing_activity
+>    Applying strategy: delete_ghost_exchanges
+>    Applying strategy: remove_uncertainty_from_negative_loss_exchanges
+>    Applying strategy: fix_unreasonably_high_lognormal_uncertainties
+>    Applying strategy: set_lognormal_loc_value
+>    Applied 16 strategies in 4.56 seconds
+>    14889 datasets
+>    520205 exchanges
+>    0 unlinked exchanges
+>      
+>    
+>    Write database cutoff34 in project eidl_demo?
+>    [y]/n y
+>
+>
+>    Writing activities to SQLite3 database:
+>    0%                          100%
+>    [##############################] | ETA: 00:00:00
+>    Total time elapsed: 00:01:22
+>
+>
+>    Title: Writing activities to SQLite3 database:
+>      Started: 04/25/2018 14:33:09
+>      Finished: 04/25/2018 14:34:32
+>      Total time elapsed: 00:01:22
+>      CPU %: 56.10
+>      Memory %: 7.07
+>    Created database: cutoff34
 
