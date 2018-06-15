@@ -3,10 +3,10 @@ import sys
 import string
 import tempfile
 import getpass
+import subprocess
 
 import requests
 import bs4
-import patoolib
 import brightway2 as bw
 
 
@@ -104,22 +104,6 @@ class EcoinventDownloader:
 
 
 def check_requirements():
-    try:
-        patoolib.find_archive_program('7z', 'extract')
-    except patoolib.util.PatoolError as e:
-        print('The 7zip program needs to be installed on your system to ' +
-              'unarchive the ecoinvent databases.')
-        if sys.platform == 'win32':
-            print('You can download it from www.7zip.org')
-        elif sys.platform == 'darwin':
-            print('In a terminal window type: "brew install p7zip"')
-        elif sys.platform.startswith('linux'):
-            print('use "sudo apt install p7zip-full" or equivalent')
-        else:
-            print('Please install 7zip. More infos here: www.7zip.org')
-        print('You may have to restart your jupyter notebook (or ipython) ' +
-              'after the installation')
-        return False
     if 'biosphere3' in bw.databases:
         return True
     else:
@@ -137,7 +121,8 @@ def get_ecoinvent(db_name=None, *args, **kwargs):
     if check_requirements():
         with tempfile.TemporaryDirectory() as td:
             downloader = EcoinventDownloader(*args, outdir=td, **kwargs)
-            patoolib.extract_archive(downloader.out_path, outdir=td)
+            extract = '7za x {} -o{}'.format(downloader.out_path, td)
+            subprocess.call(extract.split())
             if not db_name:
                 db_name = downloader.file_name.replace('.7z', '')
             datasets_path = os.path.join(td, 'datasets')

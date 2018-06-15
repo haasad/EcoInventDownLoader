@@ -1,5 +1,5 @@
 {% set name = "eidl" %}
-{% set version = "1.0.0" %}
+{% set version = "1.0.1" %}
 
 package:
   name: {{ name|lower }}
@@ -25,7 +25,7 @@ requirements:
     - brightway2
     - requests
     - beautifulsoup4
-    - patool
+    - eidl7zip
 
 test:
   imports:
