@@ -17,7 +17,6 @@ You will be asked to enter your ecoinvent username and password, and which versi
 ## Prerequisites
 
 - Valid [ecoinvent](https://www.ecoinvent.org) login credentials
-- [7-Zip file archiver](https://www.7-zip.org/) (installation instructions below)
 
 ## Installation
 
@@ -49,11 +48,3 @@ eidl.get_ecoinvent()
 ```
 
 See also the [example notebook](./example_usage.ipynb) for more details.
-
-## 7-Zip
-
-`eidl` makes use of your locally install 7-zip program to unpack the ecoinvent 7z-archives. You can install it like this:
-
-- __Windows__: Install from [www.7-zip.org](https://www.7-zip.org)
-- __OS X__: Use [homebrew](https://brew.sh/) to install: `brew install p7zip`
-- __Linux__: Use your distro's package manager: eg. `sudo apt install p7zip-full` for Ubuntu
