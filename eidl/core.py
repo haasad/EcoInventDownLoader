@@ -117,7 +117,7 @@ def check_requirements():
             return False
 
 
-def get_ecoinvent(db_name=None, *args, **kwargs):
+def get_ecoinvent(db_name=None, auto_write=False, *args, **kwargs):
     if check_requirements():
         with tempfile.TemporaryDirectory() as td:
             downloader = EcoinventDownloader(*args, outdir=td, **kwargs)
@@ -128,11 +128,17 @@ def get_ecoinvent(db_name=None, *args, **kwargs):
             datasets_path = os.path.join(td, 'datasets')
             importer = bw.SingleOutputEcospold2Importer(datasets_path, db_name)
             importer.apply_strategies()
-            importer.statistics()
-            print('\nWrite database {} in project {}?'.format(
+            datasets, exchanges, unlinked = importer.statistics()
+
+            if auto_write and not unlinked:
+                print('\nWriting database {} in project {}'.format(
                 db_name, bw.projects.current))
-            if input('[y]/n ') in {'y', ''}:
                 importer.write_database()
+            else:
+                print('\nWrite database {} in project {}?'.format(
+                    db_name, bw.projects.current))
+                if input('[y]/n ') in {'y', ''}:
+                    importer.write_database()
 
 
 def get_ecoinvent_cli():
