@@ -103,22 +103,25 @@ class EcoinventDownloader:
             url + self.db_dict[db_key]).content
 
 
-def check_requirements():
+def check_requirements(auto_write):
     if 'biosphere3' in bw.databases:
         return True
     else:
-        print('No biosphere database present in your current ' +
-              'project: {}'.format(bw.projects.current))
-        print('You can run "bw2setup()" if this is a new project. Run it now?')
-        if input('[y]/n ') in {'y', ''}:
+        if auto_write:
             bw.bw2setup()
-            return True
         else:
-            return False
+            print('No biosphere database present in your current ' +
+                  'project: {}'.format(bw.projects.current))
+            print('You can run "bw2setup()" if this is a new project. Run it now?')
+            if input('[y]/n ') in {'y', ''}:
+                bw.bw2setup()
+                return True
+            else:
+                return False
 
 
 def get_ecoinvent(db_name=None, auto_write=False, *args, **kwargs):
-    if check_requirements():
+    if check_requirements(auto_write=auto_write):
         with tempfile.TemporaryDirectory() as td:
             downloader = EcoinventDownloader(*args, outdir=td, **kwargs)
             extract = '7za x {} -o{}'.format(downloader.out_path, td)
