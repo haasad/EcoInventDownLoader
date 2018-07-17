@@ -51,7 +51,7 @@ class EcoinventDownloader:
                      'Password': self.password,
                      'IsEncrypted': 'false',
                      'ReturnUrl': '/'}
-        self.session.post(logon_url, post_data)
+        self.session.post(logon_url, post_data, timeout=20)
         if not len(self.session.cookies):
             print('Login failed')
             self.username, self.password = self.get_credentials()
