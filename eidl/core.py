@@ -51,7 +51,7 @@ class EcoinventDownloader:
                      'Password': self.password,
                      'IsEncrypted': 'false',
                      'ReturnUrl': '/'}
-        self.session.post(logon_url, post_data)
+        self.session.post(logon_url, post_data, timeout=20)
         if not len(self.session.cookies):
             print('Login failed')
             self.username, self.password = self.get_credentials()
@@ -103,21 +103,25 @@ class EcoinventDownloader:
             url + self.db_dict[db_key]).content
 
 
-def check_requirements():
+def check_requirements(auto_write):
     if 'biosphere3' in bw.databases:
         return True
     else:
-        print('No biosphere database present in your current ' +
-              'project: {}'.format(bw.projects.current))
-        print('You can run "bw2setup()" if this is a new project. Run it now?')
-        if input('[y]/n ') in {'y', ''}:
+        if auto_write:
             bw.bw2setup()
-            return True
         else:
-            return False
+            print('No biosphere database present in your current ' +
+                  'project: {}'.format(bw.projects.current))
+            print('You can run "bw2setup()" if this is a new project. Run it now?')
+            if input('[y]/n ') in {'y', ''}:
+                bw.bw2setup()
+                return True
+            else:
+                return False
 
 
 def get_ecoinvent(db_name=None, auto_write=False, *args, **kwargs):
+
     """
     Download and import ecoinvent to current brightway2 project
     Optional kwargs:
@@ -125,7 +129,7 @@ def get_ecoinvent(db_name=None, auto_write=False, *args, **kwargs):
         auto_write: automatically write database if no unlinked processes (boolean) default is False (i.e. prompt yes or no)
         download_path: path to download .7z file to (string) default is download to temporary directory (.7z file is deleted after import)
     """
-    if check_requirements():
+    if check_requirements(auto_write=auto_write):
 
         with tempfile.TemporaryDirectory() as td:
 
