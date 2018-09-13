@@ -106,12 +106,6 @@ class EcoinventDownloader:
             url + self.db_dict[db_key]).content
 
 
-def ensure_biosphere():
-    if 'biosphere3' not in bw.databases:
-        print('Running bw2setup')
-        bw.bw2setup()
-
-
 def get_ecoinvent(db_name=None, auto_write=False, download_path=None, *args, **kwargs):
 
     """
