@@ -1,5 +1,4 @@
 import os
-import sys
 import string
 import tempfile
 import getpass
@@ -13,31 +12,34 @@ import brightway2 as bw
 class EcoinventDownloader:
     def __init__(self, username=None, password=None, version=None,
                  system_model=None, outdir=None, **kwargs):
-        if username and password:
-            self.username = username
-            self.password = password
-        else:
+        self.username = username
+        self.password = password
+        self.version = version
+        self.system_model = system_model
+        self.outdir = outdir
+
+    def run_interactive(self):
+        if self.username is None or self.password is None:
             self.username, self.password = self.get_credentials()
         print('logging in to ecoinvent homepage...')
         self.login()
-        self.get_available_files()
+        self.db_dict = self.get_available_files()
         print('login successful!')
-        if (version, system_model) in self.db_dict.keys():
-            self.version = version
-            self.system_model = system_model
-        else:
+        if (self.version, self.system_model) not in self.db_dict.keys():
             self.version, self.system_model = self.choose_db()
         print('downloading {} {} ...'.format(self.system_model, self.version))
         self.download()
         self.file_name = '{}{}.7z'.format(
-            self.system_model, self.version.replace('.', ''))
-        if outdir:
-            self.out_path = os.path.join(outdir, self.file_name)
+            self.system_model, self.version.replace('.', '')
+        )
+        if self.outdir:
+            self.out_path = os.path.join(self.outdir, self.file_name)
         else:
             self.out_path = os.path.join(os.path.abspath('.'), self.file_name)
+
         with open(self.out_path, 'wb') as out_file:
             out_file.write(self.file_content)
-        print('download finished!: {}'.format(self.out_path), end='\n\n')
+        print('download finished!: {}\n'.format(self.out_path))
 
     def get_credentials(self):
         un = input('ecoinvent username: ')
@@ -64,9 +66,10 @@ class EcoinventDownloader:
         file_list = [l for l in soup.find_all('a', href=True) if
                      l['href'].startswith('/File/File?')]
         link_dict = {f.contents[0]: f['href'] for f in file_list}
-        self.db_dict = {
+        db_dict = {
             tuple(k.replace('ecoinvent ', '').split('_')[:2:]): v for k, v in
             link_dict.items() if k.endswith('.7z') and 'lc' not in k.lower()}
+        return db_dict
 
     def choose_db(self):
         versions = {k[0] for k in self.db_dict.keys()}
@@ -141,6 +144,7 @@ def get_ecoinvent(db_name=None, auto_write=False, *args, **kwargs):
             print("downloading to {}".format(download_path))
 
             downloader = EcoinventDownloader(*args, outdir=download_path, **kwargs)
+            downloader.run_interactive()
 
             extract = '7za x {} -o{}'.format(downloader.out_path, td)
             subprocess.call(extract.split())
@@ -154,7 +158,7 @@ def get_ecoinvent(db_name=None, auto_write=False, *args, **kwargs):
 
         if auto_write and not unlinked:
             print('\nWriting database {} in project {}'.format(
-            db_name, bw.projects.current))
+                db_name, bw.projects.current))
             importer.write_database()
         else:
             print('\nWrite database {} in project {}?'.format(
@@ -164,4 +168,5 @@ def get_ecoinvent(db_name=None, auto_write=False, *args, **kwargs):
 
 
 def get_ecoinvent_cli():
-    EcoinventDownloader()
+    downloader = EcoinventDownloader()
+    downloader.run_interactive()
