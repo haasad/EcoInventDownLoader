@@ -106,12 +106,6 @@ class EcoinventDownloader:
             url + self.db_dict[db_key]).content
 
 
-def ensure_biosphere():
-    if 'biosphere3' not in bw.databases:
-        print('Running bw2setup')
-        bw.bw2setup()
-
-
 def get_ecoinvent(db_name=None, auto_write=False, download_path=None, *args, **kwargs):
 
     """
@@ -151,7 +145,6 @@ def get_ecoinvent(db_name=None, auto_write=False, download_path=None, *args, **k
     datasets, exchanges, unlinked = importer.statistics()
 
     if auto_write and not unlinked:
-        ensure_biosphere()
         print('\nWriting database {} in project {}'.format(
             db_name, bw.projects.current))
         importer.write_database()
@@ -159,7 +152,6 @@ def get_ecoinvent(db_name=None, auto_write=False, download_path=None, *args, **k
         print('\nWrite database {} in project {}?'.format(
             db_name, bw.projects.current))
         if input('[y]/n ') in {'y', ''}:
-            ensure_biosphere()
             importer.write_database()
 
 
