@@ -106,24 +106,13 @@ class EcoinventDownloader:
             url + self.db_dict[db_key]).content
 
 
-def check_requirements(auto_write):
-    if 'biosphere3' in bw.databases:
-        return True
-    else:
-        if auto_write:
-            bw.bw2setup()
-        else:
-            print('No biosphere database present in your current ' +
-                  'project: {}'.format(bw.projects.current))
-            print('You can run "bw2setup()" if this is a new project. Run it now?')
-            if input('[y]/n ') in {'y', ''}:
-                bw.bw2setup()
-                return True
-            else:
-                return False
+def ensure_biosphere():
+    if 'biosphere3' not in bw.databases:
+        print('Running bw2setup')
+        bw.bw2setup()
 
 
-def get_ecoinvent(db_name=None, auto_write=False, *args, **kwargs):
+def get_ecoinvent(db_name=None, auto_write=False, download_path=None, *args, **kwargs):
 
     """
     Download and import ecoinvent to current brightway2 project
@@ -132,39 +121,51 @@ def get_ecoinvent(db_name=None, auto_write=False, *args, **kwargs):
         auto_write: automatically write database if no unlinked processes (boolean) default is False (i.e. prompt yes or no)
         download_path: path to download .7z file to (string) default is download to temporary directory (.7z file is deleted after import)
     """
-    if check_requirements(auto_write=auto_write):
+    with tempfile.TemporaryDirectory() as td:
 
-        with tempfile.TemporaryDirectory() as td:
-
-            if 'download_path' in kwargs:
-                download_path = kwargs['download_path']
-            else:
-                download_path = td
-
-            print("downloading to {}".format(download_path))
-
-            downloader = EcoinventDownloader(*args, outdir=download_path, **kwargs)
-            downloader.run_interactive()
-
-            extract = '7za x {} -o{}'.format(downloader.out_path, td)
-            subprocess.call(extract.split())
-            if not db_name:
-                db_name = downloader.file_name.replace('.7z', '')
-            datasets_path = os.path.join(td, 'datasets')
-            importer = bw.SingleOutputEcospold2Importer(datasets_path, db_name)
-
-        importer.apply_strategies()
-        datasets, exchanges, unlinked = importer.statistics()
-
-        if auto_write and not unlinked:
-            print('\nWriting database {} in project {}'.format(
-                db_name, bw.projects.current))
-            importer.write_database()
+        if 'download_path' in kwargs:
+            download_path = kwargs['download_path']
         else:
-            print('\nWrite database {} in project {}?'.format(
-                db_name, bw.projects.current))
+            download_path = td
+
+        print("downloading to {}".format(download_path))
+
+        downloader = EcoinventDownloader(*args, outdir=download_path, **kwargs)
+        downloader.run_interactive()
+
+        extract = '7za x {} -o{}'.format(downloader.out_path, td)
+        subprocess.call(extract.split())
+        if not db_name:
+            db_name = downloader.file_name.replace('.7z', '')
+        datasets_path = os.path.join(td, 'datasets')
+        importer = bw.SingleOutputEcospold2Importer(datasets_path, db_name)
+
+    if 'biosphere3' not in bw.databases:
+        if auto_write:
+            bw.bw2setup()
+        else:
+            print('No biosphere database present in your current ' +
+                  'project: {}'.format(bw.projects.current))
+            print('You can run "bw2setup()" if this is a new project. Run it now?')
             if input('[y]/n ') in {'y', ''}:
-                importer.write_database()
+                bw.bw2setup()
+            else:
+                return
+
+    importer.apply_strategies()
+    datasets, exchanges, unlinked = importer.statistics()
+
+    if auto_write and not unlinked:
+        ensure_biosphere()
+        print('\nWriting database {} in project {}'.format(
+            db_name, bw.projects.current))
+        importer.write_database()
+    else:
+        print('\nWrite database {} in project {}?'.format(
+            db_name, bw.projects.current))
+        if input('[y]/n ') in {'y', ''}:
+            ensure_biosphere()
+            importer.write_database()
 
 
 def get_ecoinvent_cli():
