@@ -122,13 +122,8 @@ def get_ecoinvent(db_name=None, auto_write=False, download_path=None, *args, **k
         download_path: path to download .7z file to (string) default is download to temporary directory (.7z file is deleted after import)
     """
     with tempfile.TemporaryDirectory() as td:
-
-        if 'download_path' in kwargs:
-            download_path = kwargs['download_path']
-        else:
+        if download_path is None:
             download_path = td
-
-        print("downloading to {}".format(download_path))
 
         downloader = EcoinventDownloader(*args, outdir=download_path, **kwargs)
         downloader.run_interactive()
