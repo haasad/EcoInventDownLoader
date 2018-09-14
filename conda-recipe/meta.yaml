@@ -26,6 +26,7 @@ requirements:
     - requests
     - beautifulsoup4
     - eidl7zip
+    - appdirs
 
 test:
   imports:

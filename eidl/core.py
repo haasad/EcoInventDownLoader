@@ -8,6 +8,8 @@ import requests
 import bs4
 import brightway2 as bw
 
+from eidl.storage import eidlstorage
+
 
 class EcoinventDownloader:
     def __init__(self, username=None, password=None, version=None,
@@ -19,6 +21,8 @@ class EcoinventDownloader:
         self.outdir = outdir
 
     def run_interactive(self):
+        if self.check_stored():
+            return
         if self.username is None or self.password is None:
             self.username, self.password = self.get_credentials()
         print('logging in to ecoinvent homepage...')
@@ -27,11 +31,11 @@ class EcoinventDownloader:
         print('login successful!')
         if (self.version, self.system_model) not in self.db_dict.keys():
             self.version, self.system_model = self.choose_db()
+        if self.check_stored():
+            return
+
         print('downloading {} {} ...'.format(self.system_model, self.version))
         self.download()
-        self.file_name = '{}{}.7z'.format(
-            self.system_model, self.version.replace('.', '')
-        )
         if self.outdir:
             self.out_path = os.path.join(self.outdir, self.file_name)
         else:
@@ -40,6 +44,19 @@ class EcoinventDownloader:
         with open(self.out_path, 'wb') as out_file:
             out_file.write(self.file_content)
         print('download finished!: {}\n'.format(self.out_path))
+
+    @property
+    def file_name(self):
+        fn = '{}{}.7z'.format(self.system_model, str(self.version).replace('.', ''))
+        return fn
+
+    def check_stored(self):
+        if self.file_name in eidlstorage.stored_dbs:
+            self.out_path = eidlstorage.stored_dbs[self.file_name]
+            print('database already downloaded')
+            return True
+        else:
+            return False
 
     def get_credentials(self):
         un = input('ecoinvent username: ')
@@ -106,7 +123,7 @@ class EcoinventDownloader:
             url + self.db_dict[db_key]).content
 
 
-def get_ecoinvent(db_name=None, auto_write=False, download_path=None, *args, **kwargs):
+def get_ecoinvent(db_name=None, auto_write=False, download_path=None, store_download=True, *args, **kwargs):
 
     """
     Download and import ecoinvent to current brightway2 project
@@ -114,10 +131,14 @@ def get_ecoinvent(db_name=None, auto_write=False, download_path=None, *args, **k
         db_name: name to give imported database (string) default is downloaded filename
         auto_write: automatically write database if no unlinked processes (boolean) default is False (i.e. prompt yes or no)
         download_path: path to download .7z file to (string) default is download to temporary directory (.7z file is deleted after import)
+        store_download: store the .7z file for later reuse, default is True, only takes effect if no download_path is provided
     """
     with tempfile.TemporaryDirectory() as td:
         if download_path is None:
-            download_path = td
+            if store_download:
+                download_path = eidlstorage.eidl_dir
+            else:
+                download_path = td
 
         downloader = EcoinventDownloader(*args, outdir=download_path, **kwargs)
         downloader.run_interactive()
