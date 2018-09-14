@@ -123,7 +123,7 @@ class EcoinventDownloader:
             url + self.db_dict[db_key]).content
 
 
-def get_ecoinvent(db_name=None, auto_write=False, download_path=None, store_download=True, *args, **kwargs):
+def get_ecoinvent(db_name=None, auto_write=False, download_path=None, store_download=True, **kwargs):
 
     """
     Download and import ecoinvent to current brightway2 project
@@ -140,7 +140,7 @@ def get_ecoinvent(db_name=None, auto_write=False, download_path=None, store_down
             else:
                 download_path = td
 
-        downloader = EcoinventDownloader(*args, outdir=download_path, **kwargs)
+        downloader = EcoinventDownloader(outdir=download_path, **kwargs)
         downloader.run_interactive()
 
         extract = '7za x {} -o{}'.format(downloader.out_path, td)
