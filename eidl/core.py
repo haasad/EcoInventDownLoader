@@ -70,11 +70,25 @@ class EcoinventDownloader:
                      'Password': self.password,
                      'IsEncrypted': 'false',
                      'ReturnUrl': '/'}
-        self.session.post(logon_url, post_data, timeout=20)
+        try:
+            self.session.post(logon_url, post_data, timeout=20)
+        except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError):
+            self.handle_connection_timeout()
+
         if not len(self.session.cookies):
             print('Login failed')
             self.username, self.password = self.get_credentials()
             self.login()
+
+    def handle_connection_timeout(self):
+        print('The request timed out, please check your internet connection!')
+        if eidlstorage.stored_dbs:
+            print(
+                'You have the following databases stored:\n\t{}\n'.format(
+                    '\n\t'.join(eidlstorage.stored_dbs.keys())) +
+                'You can use these offline by adding the corresponding `version` and `system_model` keywords\n' +
+                "Example: eidl.get_ecoinvent(version='3.5', system_model='cutoff')"
+            )
 
     def get_available_files(self):
         files_url = 'https://v33.ecoquery.ecoinvent.org/File/Files'
