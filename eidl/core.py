@@ -20,7 +20,7 @@ class EcoinventDownloader:
         self.system_model = system_model
         self.outdir = outdir
 
-    def run_interactive(self):
+    def run(self):
         if self.check_stored():
             return
         if self.username is None or self.password is None:
@@ -145,7 +145,7 @@ def get_ecoinvent(db_name=None, auto_write=False, download_path=None, store_down
                 download_path = td
 
         downloader = EcoinventDownloader(outdir=download_path, **kwargs)
-        downloader.run_interactive()
+        downloader.run()
         downloader.extract(target_dir=td)
 
         if not db_name:
@@ -181,4 +181,4 @@ def get_ecoinvent(db_name=None, auto_write=False, download_path=None, store_down
 
 def get_ecoinvent_cli():
     downloader = EcoinventDownloader()
-    downloader.run_interactive()
+    downloader.run()
