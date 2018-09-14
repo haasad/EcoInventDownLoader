@@ -150,6 +150,10 @@ def get_ecoinvent(db_name=None, auto_write=False, download_path=None, store_down
         auto_write: automatically write database if no unlinked processes (boolean) default is False (i.e. prompt yes or no)
         download_path: path to download .7z file to (string) default is download to temporary directory (.7z file is deleted after import)
         store_download: store the .7z file for later reuse, default is True, only takes effect if no download_path is provided
+        username: ecoinvent username (string)
+        password: ecoivnent password (string)
+        version: ecoinvent version (string), eg '3.5'
+        system_model: ecoinvent system model (string), one of {'cutoff', 'apos', 'consequential'}
     """
     with tempfile.TemporaryDirectory() as td:
         if download_path is None:
