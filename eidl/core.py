@@ -122,6 +122,10 @@ class EcoinventDownloader:
         self.file_content = self.session.get(
             url + self.db_dict[db_key]).content
 
+    def extract(self, target_dir):
+        extract_cmd = '7za x {} -o{}'.format(self.out_path, target_dir)
+        subprocess.call(extract_cmd.split())
+
 
 def get_ecoinvent(db_name=None, auto_write=False, download_path=None, store_download=True, **kwargs):
 
@@ -142,9 +146,8 @@ def get_ecoinvent(db_name=None, auto_write=False, download_path=None, store_down
 
         downloader = EcoinventDownloader(outdir=download_path, **kwargs)
         downloader.run_interactive()
+        downloader.extract(target_dir=td)
 
-        extract = '7za x {} -o{}'.format(downloader.out_path, td)
-        subprocess.call(extract.split())
         if not db_name:
             db_name = downloader.file_name.replace('.7z', '')
         datasets_path = os.path.join(td, 'datasets')
