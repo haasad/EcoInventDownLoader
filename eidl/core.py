@@ -36,13 +36,6 @@ class EcoinventDownloader:
 
         print('downloading {} {} ...'.format(self.system_model, self.version))
         self.download()
-        if self.outdir:
-            self.out_path = os.path.join(self.outdir, self.file_name)
-        else:
-            self.out_path = os.path.join(os.path.abspath('.'), self.file_name)
-
-        with open(self.out_path, 'wb') as out_file:
-            out_file.write(self.file_content)
         print('download finished!: {}\n'.format(self.out_path))
 
     @property
@@ -137,8 +130,15 @@ class EcoinventDownloader:
     def download(self):
         url = 'https://v33.ecoquery.ecoinvent.org'
         db_key = (self.version, self.system_model)
-        self.file_content = self.session.get(
-            url + self.db_dict[db_key]).content
+        file_content = self.session.get(url + self.db_dict[db_key]).content
+
+        if self.outdir:
+            self.out_path = os.path.join(self.outdir, self.file_name)
+        else:
+            self.out_path = os.path.join(os.path.abspath('.'), self.file_name)
+
+        with open(self.out_path, 'wb') as out_file:
+            out_file.write(file_content)
 
     def extract(self, target_dir):
         extract_cmd = '7za x {} -o{}'.format(self.out_path, target_dir)
