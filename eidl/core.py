@@ -75,7 +75,11 @@ class EcoinventDownloader:
         except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError):
             self.handle_connection_timeout()
 
-        if not len(self.session.cookies):
+        success = bool(self.session.cookies)
+        self.login_success(success)
+
+    def login_success(self, success):
+        if not success:
             print('Login failed')
             self.username, self.password = self.get_credentials()
             self.login()
