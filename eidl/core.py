@@ -142,7 +142,8 @@ class EcoinventDownloader:
 
     def extract(self, target_dir):
         extract_cmd = '7za x {} -o{}'.format(self.out_path, target_dir)
-        subprocess.call(extract_cmd.split())
+        self.extraction_process = subprocess.Popen(extract_cmd.split())
+        self.extraction_process.wait()
 
 
 def get_ecoinvent(db_name=None, auto_write=False, download_path=None, store_download=True, **kwargs):
