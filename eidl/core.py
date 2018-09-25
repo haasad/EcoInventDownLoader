@@ -36,13 +36,6 @@ class EcoinventDownloader:
 
         print('downloading {} {} ...'.format(self.system_model, self.version))
         self.download()
-        if self.outdir:
-            self.out_path = os.path.join(self.outdir, self.file_name)
-        else:
-            self.out_path = os.path.join(os.path.abspath('.'), self.file_name)
-
-        with open(self.out_path, 'wb') as out_file:
-            out_file.write(self.file_content)
         print('download finished!: {}\n'.format(self.out_path))
 
     @property
@@ -72,10 +65,15 @@ class EcoinventDownloader:
                      'ReturnUrl': '/'}
         try:
             self.session.post(logon_url, post_data, timeout=20)
-        except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError):
+        except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError) as e:
             self.handle_connection_timeout()
+            raise e
 
-        if not len(self.session.cookies):
+        success = bool(self.session.cookies)
+        self.login_success(success)
+
+    def login_success(self, success):
+        if not success:
             print('Login failed')
             self.username, self.password = self.get_credentials()
             self.login()
@@ -92,7 +90,11 @@ class EcoinventDownloader:
 
     def get_available_files(self):
         files_url = 'https://v33.ecoquery.ecoinvent.org/File/Files'
-        files_res = self.session.get(files_url)
+        try:
+            files_res = self.session.get(files_url, timeout=20)
+        except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError) as e:
+            self.handle_connection_timeout()
+            raise e
         soup = bs4.BeautifulSoup(files_res.text, 'html.parser')
         file_list = [l for l in soup.find_all('a', href=True) if
                      l['href'].startswith('/File/File?')]
@@ -133,12 +135,24 @@ class EcoinventDownloader:
     def download(self):
         url = 'https://v33.ecoquery.ecoinvent.org'
         db_key = (self.version, self.system_model)
-        self.file_content = self.session.get(
-            url + self.db_dict[db_key]).content
+        try:
+            file_content = self.session.get(url + self.db_dict[db_key], timeout=60).content
+        except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError) as e:
+            self.handle_connection_timeout()
+            raise e
+
+        if self.outdir:
+            self.out_path = os.path.join(self.outdir, self.file_name)
+        else:
+            self.out_path = os.path.join(os.path.abspath('.'), self.file_name)
+
+        with open(self.out_path, 'wb') as out_file:
+            out_file.write(file_content)
 
     def extract(self, target_dir):
         extract_cmd = '7za x {} -o{}'.format(self.out_path, target_dir)
-        subprocess.call(extract_cmd.split())
+        self.extraction_process = subprocess.Popen(extract_cmd.split())
+        self.extraction_process.wait()
 
 
 def get_ecoinvent(db_name=None, auto_write=False, download_path=None, store_download=True, **kwargs):
