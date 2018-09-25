@@ -65,8 +65,9 @@ class EcoinventDownloader:
                      'ReturnUrl': '/'}
         try:
             self.session.post(logon_url, post_data, timeout=20)
-        except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError):
+        except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError) as e:
             self.handle_connection_timeout()
+            raise e
 
         success = bool(self.session.cookies)
         self.login_success(success)
@@ -89,7 +90,11 @@ class EcoinventDownloader:
 
     def get_available_files(self):
         files_url = 'https://v33.ecoquery.ecoinvent.org/File/Files'
-        files_res = self.session.get(files_url)
+        try:
+            files_res = self.session.get(files_url, timeout=20)
+        except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError) as e:
+            self.handle_connection_timeout()
+            raise e
         soup = bs4.BeautifulSoup(files_res.text, 'html.parser')
         file_list = [l for l in soup.find_all('a', href=True) if
                      l['href'].startswith('/File/File?')]
@@ -130,7 +135,11 @@ class EcoinventDownloader:
     def download(self):
         url = 'https://v33.ecoquery.ecoinvent.org'
         db_key = (self.version, self.system_model)
-        file_content = self.session.get(url + self.db_dict[db_key]).content
+        try:
+            file_content = self.session.get(url + self.db_dict[db_key], timeout=60).content
+        except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError) as e:
+            self.handle_connection_timeout()
+            raise e
 
         if self.outdir:
             self.out_path = os.path.join(self.outdir, self.file_name)
