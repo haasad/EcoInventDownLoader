@@ -151,8 +151,16 @@ class EcoinventDownloader:
 
     def extract(self, target_dir):
         extract_cmd = ['7za', 'x', self.out_path, '-o{}'.format(target_dir)]
-        self.extraction_process = subprocess.Popen(extract_cmd)
-        self.extraction_process.wait()
+        try:
+            self.extraction_process = subprocess.Popen(extract_cmd)
+            self.extraction_process.wait()
+        except FileNotFoundError as e:
+            if "PYCHARM_HOSTED" in os.environ:
+                print('It appears the EcoInventDownLoader is run from PyCharm. ' +
+                      'Please make sure you select the the correct conda environment ' +
+                      'as your project interperter or run your script/command in a ' +
+                      'Python console outside of PyCharm.')
+            raise e
 
 
 def get_ecoinvent(db_name=None, auto_write=False, download_path=None, store_download=True, **kwargs):
