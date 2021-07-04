@@ -29,8 +29,12 @@ jobs:
     - name: Install dependencies
       shell: bash -l {0}
       run: |
-        conda install conda-build
+        conda install conda-build anaconda-client
     - name: Build conda package
       shell: bash -l {0}
       run: |
         conda build ./conda-recipe/
+    - name: Upload to haasad conda channel
+      shell: bash -l {0}
+      run: |
+        anaconda upload -t ${{ secrets.CONDA_TOKEN }} /usr/share/miniconda/envs/test/conda-bld/noarch/eidl-*.tar.bz2
