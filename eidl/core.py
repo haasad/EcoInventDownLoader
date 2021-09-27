@@ -99,9 +99,13 @@ class EcoinventDownloader:
         file_list = [l for l in soup.find_all('a', href=True) if
                      l['href'].startswith('/File/File?')]
         link_dict = {f.contents[0]: f['href'] for f in file_list}
+        link_dict = {
+            k.replace('-', ''):v for k, v in link_dict.items() if k.startswith('ecoinvent ') and
+            k.endswith('ecoSpold02.7z') and not 'lc' in k.lower()
+        }
         db_dict = {
-            tuple(k.replace('ecoinvent ', '').split('_')[:2:]): v for k, v in
-            link_dict.items() if k.endswith('.7z') and 'lc' not in k.lower()}
+            tuple(k.replace('ecoinvent ', '').split('_')[:2:]): v for k, v in link_dict.items()
+        }
         return db_dict
 
     def choose_db(self):
