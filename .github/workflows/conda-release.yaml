@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: 3.8
           activate-environment: build
-          environment-file: .github/environment-build.yml
+          environment-file: .github/environment-build.yaml
       - name: Build conda package
         shell: bash -l {0}
         run: |
