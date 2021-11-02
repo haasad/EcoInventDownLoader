@@ -1,0 +1,9 @@
+name: build
+channels:
+  - conda-forge
+  - cmutel
+  - haasad
+dependencies:
+  - conda-build
+  - anaconda-client
+  - conda-verify
