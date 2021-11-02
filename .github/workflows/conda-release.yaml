@@ -15,8 +15,8 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: 3.8
-         activate-environment: build
-         environment-file: .github/environment-build.yml
+          activate-environment: build
+          environment-file: .github/environment-build.yml
       - name: Build conda package
         shell: bash -l {0}
         run: |
