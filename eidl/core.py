@@ -121,7 +121,7 @@ class EcoinventDownloader:
                 break
             else:
                 print('Enter version number or letter')
-        system_models = {k[1] for k in self.db_dict.keys()}
+        system_models = {k[1] for k in self.db_dict.keys() if k[0] == version_dict.get(version, version)}
         sm_dict = dict(zip(string.ascii_lowercase, sorted(system_models)))
         print('\n', 'system models:')
         for k, sm in sm_dict.items():
