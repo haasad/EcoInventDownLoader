@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='eidl',
     packages=['eidl'],
-    version='1.3.2',
+    version='1.3.3',
     author="Adrian Haas",
     url="https://github.com/haasad/EcoInventDownLoader",
     license=open('LICENSE').read(),
