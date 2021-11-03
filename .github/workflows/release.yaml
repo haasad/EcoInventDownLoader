@@ -49,4 +49,4 @@ jobs:
         shell: bash -l {0}
         run: |
           anaconda -t ${{ secrets.CONDA_TOKEN }} upload \
-          /usr/share/miniconda/envs/test/conda-bld/noarch/*.tar.bz2
+          /usr/share/miniconda/envs/build/conda-bld/noarch/*.tar.bz2
