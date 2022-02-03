@@ -154,7 +154,7 @@ class EcoinventDownloader:
             out_file.write(file_content)
 
     def extract(self, target_dir):
-        extract_cmd = ['7za', 'x', self.out_path, '-o{}'.format(target_dir)]
+        extract_cmd = ['py7zr', 'x', self.out_path, target_dir]
         try:
             self.extraction_process = subprocess.Popen(extract_cmd)
             self.extraction_process.wait()
