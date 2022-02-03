@@ -25,7 +25,7 @@ requirements:
     - brightway2
     - requests
     - beautifulsoup4
-    - eidl7zip
+    - py7zr
     - appdirs
 
 test:
