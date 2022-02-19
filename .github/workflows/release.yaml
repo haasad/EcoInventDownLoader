@@ -50,3 +50,5 @@ jobs:
         run: |
           anaconda -t ${{ secrets.CONDA_TOKEN }} upload \
           /usr/share/miniconda/envs/build/conda-bld/noarch/*.tar.bz2
+          anaconda -t ${{ secrets.CONDA_BSTEUBING }} upload \
+          /usr/share/miniconda/envs/build/conda-bld/noarch/*.tar.bz2
