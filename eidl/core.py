@@ -153,11 +153,11 @@ class EcoinventDownloader:
         with open(self.out_path, 'wb') as out_file:
             out_file.write(file_content)
 
-    def extract(self, target_dir):
+    def extract(self, target_dir, **kwargs):
         extract_cmd = ['py7zr', 'x', self.out_path, target_dir]
         try:
-            self.extraction_process = subprocess.Popen(extract_cmd)
-            self.extraction_process.wait()
+            self.extraction_process = subprocess.Popen(extract_cmd, **kwargs)
+            return self.extraction_process.wait()
         except FileNotFoundError as e:
             if "PYCHARM_HOSTED" in os.environ:
                 print('It appears the EcoInventDownLoader is run from PyCharm. ' +
