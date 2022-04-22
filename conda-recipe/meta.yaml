@@ -20,7 +20,8 @@ requirements:
 
   run:
     - python
-    - brightway2
+    - bw2io
+    - bw2data
     - requests
     - beautifulsoup4
     - py7zr
