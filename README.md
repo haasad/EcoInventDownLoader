@@ -6,7 +6,7 @@ The EcoInventDownLoader (eidl) is a small python package that automates the some
 - Login to the ecoinvent homepage
 - Choose and download the required database
 - Unpack the 7z-archive on your computer (which will take up close to 2GB of disk space)
-- Import the ecospold2 files with the `brightway2.SingleOutputEcospoldImporter`
+- Import the ecospold2 files with the `bw2io.SingleOutputEcospoldImporter`
 
 With `eidl`, the above steps can all be carried out with a single command from a jupyter notebook or any python shell:
 ```
