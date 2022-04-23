@@ -97,9 +97,11 @@ class EcoinventDownloader:
             self.handle_connection_timeout()
             raise e
         soup = bs4.BeautifulSoup(files_res.text, 'html.parser')
-        file_list = [l for l in soup.find_all('a', href=True) if
+        all_files = [l for l in soup.find_all('a', href=True) if
                      l['href'].startswith('/File/File?')]
-        link_dict = {f.contents[0]: f['href'] for f in file_list}
+        not_allowed = soup.find_all('a',  class_='fileDownloadNotAllowed')
+        available_files = set(all_files).difference(set(not_allowed))
+        link_dict = {f.contents[0]: f['href'] for f in available_files}
         link_dict = {
             k.replace('-', ''):v for k, v in link_dict.items() if k.startswith('ecoinvent ') and
             k.endswith('ecoSpold02.7z') and not 'lc' in k.lower()
