@@ -1,4 +1,5 @@
-[![Anaconda-Server Badge](https://anaconda.org/haasad/eidl/badges/version.svg)](https://anaconda.org/haasad/eidl) [![Anaconda-Server Badge](https://anaconda.org/haasad/eidl/badges/latest_release_date.svg)](https://anaconda.org/haasad/eidl) [![Anaconda-Server Badge](https://anaconda.org/haasad/eidl/badges/downloads.svg)](https://anaconda.org/haasad/eidl) [![Build Status](https://travis-ci.org/haasad/EcoInventDownLoader.svg?branch=master)](https://travis-ci.org/haasad/EcoInventDownLoader)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/eidl.svg)](https://anaconda.org/conda-forge/eidl)
+[![Conda Version](https://img.shields.io/conda/vn/haasad/eidl.svg)](https://anaconda.org/haasad/eidl) [![Anaconda-Server Badge](https://anaconda.org/haasad/eidl/badges/latest_release_date.svg)](https://anaconda.org/haasad/eidl) [![Anaconda-Server Badge](https://anaconda.org/haasad/eidl/badges/downloads.svg)](https://anaconda.org/haasad/eidl) [![Build Status](https://travis-ci.org/haasad/EcoInventDownLoader.svg?branch=master)](https://travis-ci.org/haasad/EcoInventDownLoader)
 # EcoInventDownLoader (eidl)
 
 The EcoInventDownLoader (eidl) is a small python package that automates the somewhat tedious process of adding an ecoinvent database to your [brightway2](https://brightway.dev/) project. Without `eidl` the following steps are required:
@@ -20,19 +21,8 @@ You will be asked to enter your ecoinvent username and password, and which versi
 
 ## Installation
 
-- Add the required conda channels to your conda config file, if you haven't done so already (ie. for the installation of brightway2):
 ```
-conda config --append channels conda-forge
-conda config --append channels cmutel
-conda config --append channels haasad
-```
-- Simply install with conda:
-```
-conda install eidl
-```
-- ___Alternatively___ you can install `eidl` without adding the channels permanently:
-```
-conda install -c defaults -c conda-forge -c cmutel -c haasad eidl
+conda install -c conda-forge eidl
 ```
 
 ## Usage
