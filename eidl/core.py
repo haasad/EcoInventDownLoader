@@ -3,6 +3,7 @@ import string
 import tempfile
 import getpass
 import subprocess
+import json
 
 import requests
 import bs4
@@ -20,6 +21,8 @@ class EcoinventDownloader:
         self.version = version
         self.system_model = system_model
         self.outdir = outdir
+        self.access_token = None
+        self.refresh_token = None
 
     def run(self):
         if self.check_stored():
@@ -58,20 +61,23 @@ class EcoinventDownloader:
         return un, pw
 
     def login(self):
-        self.session = requests.Session()
-        logon_url = 'https://v33.ecoquery.ecoinvent.org/Account/LogOn'
-        post_data = {'UserName': self.username,
-                     'Password': self.password,
-                     'IsEncrypted': 'false',
-                     'ReturnUrl': '/'}
+        sso_url='https://sso.ecoinvent.org/realms/ecoinvent/protocol/openid-connect/token'
+        post_data = {'username': self.username,
+                     'password': self.password,
+                     'client_id': 'apollo-ui',
+                     'grant_type': 'password'}
         try:
-            self.session.post(logon_url, post_data, timeout=20)
+            response = requests.post(sso_url, post_data, timeout=20)
         except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError) as e:
             self.handle_connection_timeout()
             raise e
 
-        success = bool(self.session.cookies)
-        self.login_success(success)
+        if response.ok:
+            tokens = json.loads(response.text)
+            self.access_token = tokens['access_token']
+            self.refresh_token = tokens['refresh_token']
+
+        self.login_success(response.ok)
 
     def login_success(self, success):
         if not success:
