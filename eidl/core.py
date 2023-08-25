@@ -3,6 +3,7 @@ import string
 import tempfile
 import getpass
 import subprocess
+import json
 
 import requests
 import bs4
@@ -20,6 +21,8 @@ class EcoinventDownloader:
         self.version = version
         self.system_model = system_model
         self.outdir = outdir
+        self.access_token = None
+        self.refresh_token = None
 
     def run(self):
         if self.check_stored():
@@ -58,20 +61,40 @@ class EcoinventDownloader:
         return un, pw
 
     def login(self):
-        self.session = requests.Session()
-        logon_url = 'https://v33.ecoquery.ecoinvent.org/Account/LogOn'
-        post_data = {'UserName': self.username,
-                     'Password': self.password,
-                     'IsEncrypted': 'false',
-                     'ReturnUrl': '/'}
+        sso_url='https://sso.ecoinvent.org/realms/ecoinvent/protocol/openid-connect/token'
+        post_data = {'username': self.username,
+                     'password': self.password,
+                     'client_id': 'apollo-ui',
+                     'grant_type': 'password'}
         try:
-            self.session.post(logon_url, post_data, timeout=20)
+            response = requests.post(sso_url, post_data, timeout=20)
         except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError) as e:
             self.handle_connection_timeout()
             raise e
 
-        success = bool(self.session.cookies)
-        self.login_success(success)
+        if response.ok:
+            tokens = json.loads(response.text)
+            self.access_token = tokens['access_token']
+            self.refresh_token = tokens['refresh_token']
+
+        self.login_success(response.ok)
+
+    def refresh_tokens(self):
+        if self.refresh_token is None:
+            return
+
+        sso_url='https://sso.ecoinvent.org/realms/ecoinvent/protocol/openid-connect/token'
+        post_data = {'client_id': 'apollo-ui',
+                     'grant_type': 'refresh_token',
+                     'refresh_token': self.refresh_token}
+        response = requests.post(sso_url, post_data, timeout=20)
+
+        if response.ok:
+            tokens = json.loads(response.text)
+            self.access_token = tokens['access_token']
+            self.refresh_token = tokens['refresh_token']
+        else:
+            self.login()
 
     def login_success(self, success):
         if not success:
@@ -90,18 +113,22 @@ class EcoinventDownloader:
             )
 
     def get_available_files(self):
-        files_url = 'https://v33.ecoquery.ecoinvent.org/File/Files'
+        files_url = 'https://api.ecoquery.ecoinvent.org/files'
+        self.refresh_tokens()
+        auth_header = {'Authorization': f'Bearer {self.access_token}'}
         try:
-            files_res = self.session.get(files_url, timeout=20)
+            files_res = requests.get(files_url, headers=auth_header, timeout=20)
         except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError) as e:
             self.handle_connection_timeout()
             raise e
-        soup = bs4.BeautifulSoup(files_res.text, 'html.parser')
-        all_files = [l for l in soup.find_all('a', href=True) if
-                     l['href'].startswith('/File/File?')]
-        not_allowed = soup.find_all('a',  class_='fileDownloadNotAllowed')
-        available_files = set(all_files).difference(set(not_allowed))
-        link_dict = {f.contents[0]: f['href'] for f in available_files}
+
+        files_raw = json.loads(files_res.text)
+        link_dict = dict()
+        for version in files_raw:
+            for release in version['releases']:
+                for rf in release['release_files']:
+                    link_dict[rf['name']] = rf['uuid']
+
         link_dict = {
             k.replace('-', ''):v for k, v in link_dict.items() if k.startswith('ecoinvent ') and
             k.endswith('ecoSpold02.7z') and not 'lc' in k.lower()
@@ -140,10 +167,13 @@ class EcoinventDownloader:
         return dbkey
 
     def download(self):
-        url = 'https://v33.ecoquery.ecoinvent.org'
         db_key = (self.version, self.system_model)
+        url = f'https://api.ecoquery.ecoinvent.org/files/r/{self.db_dict[db_key]}'
+        self.refresh_tokens()
+        auth_header = {'Authorization': f'Bearer {self.access_token}'}
         try:
-            file_content = self.session.get(url + self.db_dict[db_key], timeout=60).content
+            s3_link = json.loads(requests.get(url, headers=auth_header, timeout=20).text)
+            file_content = requests.get(s3_link['download_url'], timeout=60).content
         except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError) as e:
             self.handle_connection_timeout()
             raise e
