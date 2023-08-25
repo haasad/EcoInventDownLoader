@@ -79,6 +79,23 @@ class EcoinventDownloader:
 
         self.login_success(response.ok)
 
+    def refresh_tokens(self):
+        if self.refresh_token is None:
+            return
+
+        sso_url='https://sso.ecoinvent.org/realms/ecoinvent/protocol/openid-connect/token'
+        post_data = {'client_id': 'apollo-ui',
+                     'grant_type': 'refresh_token',
+                     'refresh_token': self.refresh_token}
+        response = requests.post(sso_url, post_data, timeout=20)
+
+        if response.ok:
+            tokens = json.loads(response.text)
+            self.access_token = tokens['access_token']
+            self.refresh_token = tokens['refresh_token']
+        else:
+            self.login()
+
     def login_success(self, success):
         if not success:
             print('Login failed')
@@ -97,6 +114,7 @@ class EcoinventDownloader:
 
     def get_available_files(self):
         files_url = 'https://api.ecoquery.ecoinvent.org/files'
+        self.refresh_tokens()
         auth_header = {'Authorization': f'Bearer {self.access_token}'}
         try:
             files_res = requests.get(files_url, headers=auth_header, timeout=20)
@@ -151,6 +169,7 @@ class EcoinventDownloader:
     def download(self):
         db_key = (self.version, self.system_model)
         url = f'https://api.ecoquery.ecoinvent.org/files/r/{self.db_dict[db_key]}'
+        self.refresh_tokens()
         auth_header = {'Authorization': f'Bearer {self.access_token}'}
         try:
             s3_link = json.loads(requests.get(url, headers=auth_header, timeout=20).text)
