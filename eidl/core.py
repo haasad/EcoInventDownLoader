@@ -149,10 +149,12 @@ class EcoinventDownloader:
         return dbkey
 
     def download(self):
-        url = 'https://v33.ecoquery.ecoinvent.org'
         db_key = (self.version, self.system_model)
+        url = f'https://api.ecoquery.ecoinvent.org/files/r/{self.db_dict[db_key]}'
+        auth_header = {'Authorization': f'Bearer {self.access_token}'}
         try:
-            file_content = self.session.get(url + self.db_dict[db_key], timeout=60).content
+            s3_link = json.loads(requests.get(url, headers=auth_header, timeout=20).text)
+            file_content = requests.get(s3_link['download_url'], timeout=60).content
         except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError) as e:
             self.handle_connection_timeout()
             raise e
