@@ -96,18 +96,21 @@ class EcoinventDownloader:
             )
 
     def get_available_files(self):
-        files_url = 'https://v33.ecoquery.ecoinvent.org/File/Files'
+        files_url = 'https://api.ecoquery.ecoinvent.org/files'
+        auth_header = {'Authorization': f'Bearer {self.access_token}'}
         try:
-            files_res = self.session.get(files_url, timeout=20)
+            files_res = requests.get(files_url, headers=auth_header, timeout=20)
         except (requests.ConnectTimeout, requests.ReadTimeout, requests.ConnectionError) as e:
             self.handle_connection_timeout()
             raise e
-        soup = bs4.BeautifulSoup(files_res.text, 'html.parser')
-        all_files = [l for l in soup.find_all('a', href=True) if
-                     l['href'].startswith('/File/File?')]
-        not_allowed = soup.find_all('a',  class_='fileDownloadNotAllowed')
-        available_files = set(all_files).difference(set(not_allowed))
-        link_dict = {f.contents[0]: f['href'] for f in available_files}
+
+        files_raw = json.loads(files_res.text)
+        link_dict = dict()
+        for version in files_raw:
+            for release in version['releases']:
+                for rf in release['release_files']:
+                    link_dict[rf['name']] = rf['uuid']
+
         link_dict = {
             k.replace('-', ''):v for k, v in link_dict.items() if k.startswith('ecoinvent ') and
             k.endswith('ecoSpold02.7z') and not 'lc' in k.lower()
