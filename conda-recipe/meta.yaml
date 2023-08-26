@@ -23,7 +23,6 @@ requirements:
     - bw2io
     - bw2data
     - requests
-    - beautifulsoup4
     - py7zr
     - appdirs
 
