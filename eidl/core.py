@@ -6,7 +6,6 @@ import subprocess
 import json
 
 import requests
-import bs4
 from bw2io import SingleOutputEcospold2Importer, bw2setup
 from bw2data import projects, databases
 
