@@ -1,3 +1,7 @@
+> [!WARNING]
+> Ecoinvent [will remove the direct access flow for login in February 2025](https://github.com/haasad/EcoInventDownLoader/issues/33). Afterwards the EcoInventDownloader will no longer work.
+> The [activity-browser](https://github.com/LCA-ActivityBrowser/activity-browser) has already been migrated to use [brightway-lca/ecoinvent_interface](https://github.com/brightway-lca/ecoinvent_interface).
+
 [![Conda Version](https://img.shields.io/conda/vn/conda-forge/eidl.svg)](https://anaconda.org/conda-forge/eidl)
 [![Conda Version](https://img.shields.io/conda/vn/haasad/eidl.svg)](https://anaconda.org/haasad/eidl) [![Anaconda-Server Badge](https://anaconda.org/haasad/eidl/badges/latest_release_date.svg)](https://anaconda.org/haasad/eidl) [![Anaconda-Server Badge](https://anaconda.org/haasad/eidl/badges/downloads.svg)](https://anaconda.org/haasad/eidl) [![Build Status](https://travis-ci.org/haasad/EcoInventDownLoader.svg?branch=master)](https://travis-ci.org/haasad/EcoInventDownLoader)
 # EcoInventDownLoader (eidl)
